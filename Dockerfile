@@ -5,7 +5,7 @@ WORKDIR /
 
 RUN apt-get -y update && apt-get -y upgrade && \
     apt-get install -y --no-install-recommends curl \
-    apt-get install xz-utils
+    apt-get install -y xz-utils
 
 COPY . /galois
 WORKDIR /galois
