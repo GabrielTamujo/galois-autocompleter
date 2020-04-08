@@ -9,7 +9,7 @@ RUN apt-get -y update && apt-get -y upgrade && \
 COPY . /galois
 WORKDIR /galois
 
-RUN curl -SL https://github.com/iedmrc/galois-autocompleter/releases/latest/download/model.tar.xz \
+RUN curl -SL http://semantics.unisinos.br/iedmrc/galois-autocompleter/releases/latest/download/model.tar.xz \
     | tar -xJC . && \
     pip --no-cache-dir install --upgrade pip && \
     pip --no-cache-dir install -r requirements.txt && \
