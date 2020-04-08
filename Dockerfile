@@ -4,10 +4,12 @@ FROM nvidia/cuda:${CUDA_VERSION}
 WORKDIR /
 
 RUN apt-get -y update && apt-get -y upgrade && \
-    apt-get install -y --no-install-recommends curl
+    apt-get install -y --no-install-recommends curl \
+    apt-get install xz-utils
 
 COPY . /galois
 WORKDIR /galois
+
 RUN curl -SL https://github.com/iedmrc/galois-autocompleter/releases/latest/download/model.tar.xz \
     | tar -xJC . && \
     pip --no-cache-dir install --upgrade pip && \
