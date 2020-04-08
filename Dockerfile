@@ -1,5 +1,5 @@
-ARG TENSORFLOW_VERSION=1.14.0-gpu-py3
-FROM tensorflow/tensorflow:${TENSORFLOW_VERSION}
+ARG CUDA_VERSION=10.0-cudnn7-runtime-ubuntu18.04
+FROM nvidia/cuda:${CUDA_VERSION}
 
 WORKDIR /
 
