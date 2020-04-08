@@ -5,18 +5,18 @@ WORKDIR /
 
 RUN apt-get -y update && apt-get -y upgrade && \
     apt-get install -y curl xz-utils && \
-    apt-get install -y python3 python3-pip
+    apt-get install -y python python-pip
 
 COPY . /galois
 WORKDIR /galois
 
 RUN curl -SL http://semantics.unisinos.br/iedmrc/galois-autocompleter/releases/latest/download/model.tar.xz \
     | tar -xJC . && \
-    pip3 --no-cache-dir install --upgrade pip && \
-    pip3 --no-cache-dir install -r requirements.txt && \
+    pip --no-cache-dir install --upgrade pip && \
+    pip --no-cache-dir install -r requirements.txt && \
     apt purge -y git curl && \
     apt autoremove --purge -y && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
-CMD [ "python3", "main.py" ]
+CMD [ "python", "main.py" ]
