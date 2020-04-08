@@ -4,7 +4,7 @@ FROM nvidia/cuda:${CUDA_VERSION}
 WORKDIR /
 
 RUN apt-get -y update && apt-get -y upgrade && \
-    apt-get install -y --no-install-recommends curl
+    apt-get install -y curl xz-utils
 
 COPY . /galois
 WORKDIR /galois
