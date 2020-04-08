@@ -19,4 +19,4 @@ RUN curl -SL http://semantics.unisinos.br/iedmrc/galois-autocompleter/releases/l
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
-CMD [ "python", "main.py" ]
+CMD [ "python3", "main.py" ]
