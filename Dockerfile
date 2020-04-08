@@ -12,8 +12,8 @@ WORKDIR /galois
 
 RUN curl -SL http://semantics.unisinos.br/iedmrc/galois-autocompleter/releases/latest/download/model.tar.xz \
     | tar -xJC . && \
-    pip --no-cache-dir install --upgrade pip && \
-    pip --no-cache-dir install -r requirements.txt && \
+    pip3 --no-cache-dir install --upgrade pip && \
+    pip3 --no-cache-dir install -r requirements.txt && \
     apt purge -y git curl && \
     apt autoremove --purge -y && \
     apt clean && \
