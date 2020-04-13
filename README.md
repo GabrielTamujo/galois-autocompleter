@@ -23,7 +23,9 @@ This repository now contains the very first release of the **Galois Project**. W
 
 We strongly recommend processing Galois with GPU, as the response time tends to be absolutely faster than the CPU. 
 
-For running on GPU, as a prerequisite for ensuring full operation through these steps, it's necessary to have a pre-configured environment with the installation of the necessary libraries through the [Official NVIDIA HowTo](https://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html#overview)
+For running on GPU, as a prerequisite for ensuring full operation through these steps, it's necessary to have a pre-configured environment with the installation of the necessary libraries through the official [NVIDIA Guide](https://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html#overview)
+
+If Galois system can't reach the NVidia/CUDA libraries or if you're running on a machine without GPU, then the system will run over the CPU. So you can use this same steps for running on CPU. 
 
 For building the image, run the following command:
 
@@ -40,7 +42,7 @@ curl -SL https://github.com/iedmrc/galois-autocompleter/releases/latest/download
 Run the container through the following command. Notice that you need to pass as a volume the model you wishes to run. 
 
 ```sh
-docker run --name galois_autocompleter --hostname galois_autocompleter --runtime nvidia -dit -p 3030:3030 --volume ~/opt/model:/galois/model galois/nvidia
+docker run --name galois_autocompleter --hostname galois_autocompleter --runtime nvidia -dit -p 3030:3030 --volume ./model:/galois/model galois/nvidia
 ```
 
 ### Without Docker
