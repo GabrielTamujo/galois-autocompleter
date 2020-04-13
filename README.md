@@ -20,15 +20,27 @@ This repository now contains the very first release of the **Galois Project**. W
 ## Installation
 
 ### With Docker
-Either clone the repository and build the image from docker file or directly run the following command:
+
+We strongly recommend processing Galois with GPU, as the response time tends to be absolutely faster than the CPU. 
+
+For running on GPU, as a prerequisite for ensuring full operation through these steps, it's necessary to have a pre-configured environment with the installation of the necessary libraries through the [Official NVIDIA HowTo](https://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html#overview)
+
+For building the image, run the following command:
 
 ```sh
-docker run --rm -dit -p 3030:3030 iedmrc/galois-autocompleter:latest-gpu
+docker build https://github.com/GabrielTamujo/galois-autocompleter.git -t galois/nvidia
 ```
-P.S: CPU image is not available on the *Docker Hub* at the moment so if you want to run it on CPU rather than GPU, clone the repository and build the image as follows:
+
+Once the image is built, you must have a model that you wishes to run. Later on this file you can check steps for finetuning your own model, but you can download and uncompress the default Galois model by the following command:
 
 ```sh
-docker build --build-arg TENSORFLOW_VERSION=1.14.0-py3 -t iedmrc/galois-autocompleter:latest .
+curl -SL https://github.com/iedmrc/galois-autocompleter/releases/latest/download/model.tar.xz | tar -xJC ./opt
+```
+
+Run the container through the following command. Notice that you need to pass as a volume the model you wishes to run. 
+
+```sh
+docker run --name galois_autocompleter --hostname galois_autocompleter --runtime nvidia -dit -p 3030:3030 --volume ~/opt/model:/galois/model galois/nvidia
 ```
 
 ### Without Docker
@@ -38,17 +50,14 @@ Clone the repository:
 git clone https://github.com/iedmrc/galois-autocompleter
 ```
 
-Download the latest model from releases and uncompress it into the directory:
+Download the Galois latest model from releases, or the one you wishes to run, and uncompress it into the directory:
 ```sh
 curl -SL https://github.com/iedmrc/galois-autocompleter/releases/latest/download/model.tar.xz | tar -xJC ./galois-autocompleter
-
 ```
-Install dependencies:
+Install dependencies:0
 ```sh
 pip3 install -r requirements.txt
 ```
-P.S.: Be sure that you have tensorflow version >= 1.13
-
 Run the autocompleter:
 ```sh
 python3 main.py
