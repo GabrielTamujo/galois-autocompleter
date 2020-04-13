@@ -4,15 +4,13 @@ FROM nvidia/cuda:${CUDA_VERSION}
 WORKDIR /
 
 RUN apt-get -y update && apt-get -y upgrade && \
-    apt-get install -y curl xz-utils && \
+    apt-get install -y curl && \
     apt-get install -y python3 python3-pip
 
 COPY . /galois
 WORKDIR /galois
 
-RUN curl -SL http://semantics.unisinos.br/iedmrc/galois-autocompleter/releases/latest/download/model.tar.xz \
-    | tar -xJC . && \
-    pip3 --no-cache-dir install --upgrade pip && \
+RUN pip3 --no-cache-dir install --upgrade pip && \
     pip3 --no-cache-dir install -r requirements.txt && \
     apt-get purge -y curl && \
     apt-get autoremove --purge -y && \
