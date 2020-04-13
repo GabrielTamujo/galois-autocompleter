@@ -4,7 +4,7 @@ FROM nvidia/cuda:${CUDA_VERSION}
 WORKDIR /
 
 RUN apt-get -y update && apt-get -y upgrade && \
-    apt-get install -y curl xz-utils && \
+    apt-get install -y curl && \
     apt-get install -y python3 python3-pip
 
 COPY . /galois
