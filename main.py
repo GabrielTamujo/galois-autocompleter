@@ -73,8 +73,9 @@ def interact_model(model_name='model', seed=99, nsamples=5, batch_size=5,
                     for i in range(batch_size):
                         generated += 1
                         text = enc.decode(out[i])
-                        predictions.append(str(text))
-
+                        if not text.isspace() and text not in predictions:
+                            predictions.append(str(text))	
+                                                
                 return Response(json.dumps({'result':predictions}), status=200, mimetype='application/json')
 
         app = Flask(__name__)
