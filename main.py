@@ -57,7 +57,7 @@ def interact_model(model_name='model', seed=99, nsamples=5, batch_size=5,
         class Autocomplete(Resource):
             def get(self): return ''
 
-            def post(self):
+            def post(self): 
                 body = request.get_json(force=True)
                 if body['text'] == "": return
 
@@ -73,6 +73,8 @@ def interact_model(model_name='model', seed=99, nsamples=5, batch_size=5,
                     for i in range(batch_size):
                         generated += 1
                         text = enc.decode(out[i])
+                        #Filtering noise
+                        text = text.replace("▄", "")
                         if not text.isspace() and text not in predictions:
                             predictions.append(str(text))	
                                                 
