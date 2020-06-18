@@ -74,7 +74,7 @@ def interact_model(model_name='model', seed=99, nsamples=5, batch_size=5,
                         generated += 1
                         text = enc.decode(out[i])
                         #Filtering noise
-                        text = text.replace("▄", "")
+                        text = text.replace("▄", "").replace("█", "")
                         if not text.isspace() and text not in predictions:
                             predictions.append(str(text))	
                                                 
