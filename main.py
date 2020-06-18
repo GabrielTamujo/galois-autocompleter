@@ -67,11 +67,13 @@ def interact_model(model_name='model',
         saver.restore(sess, ckpt)
 
         class Autocomplete(Resource):
+            from flask import current_app as app
+
             def get(self): return ''
 
             def post(self):
                 body = request.get_json(force=True)
-                logger.debug(f"Received request. Given text:\n{body['text']}")
+                app.logger.debug(f"Received request. Given text:\n{body['text']}")
                 if body['text'] == "":
                     return
 
@@ -81,8 +83,8 @@ def interact_model(model_name='model',
                 total_lines = len(text_array)
                 text = '\n'.join(
                     text_array[max(0, total_lines - MAX_LINES_SUPPORTED): total_lines])
-                logger.debug(f"Text size addapted to: {text}")
-                
+                app.logger.debug(f"Text size addapted to: {text}")
+
                 context_tokens = enc.encode(text)
                 generated = 0
                 predictions = []
@@ -101,7 +103,7 @@ def interact_model(model_name='model',
                         text = text.replace("▄", "").replace("█", "")
                         if not text.isspace() and text not in predictions:
                             predictions.append(str(text))
-                logger.debug(f"Returning predictions: {predictions}")
+                app.logger.debug(f"Returning predictions: {predictions}")
                 return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
 
         app = Flask(__name__)
