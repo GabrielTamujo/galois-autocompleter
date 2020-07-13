@@ -73,22 +73,29 @@ def interact_model(model_name='model',
 
             def post(self):
                 body = request.get_json(force=True)
-                app.logger.debug(f"Received request. Given text:\n{body['text']}")
                 if body['text'] == "":
                     return
 
-                #It's necessary to adapt the text size
-                MAX_LINES_SUPPORTED = 30
+                text = body['text']
                 text_array = body['text'].split("\n")
                 total_lines = len(text_array)
-                text = '\n'.join(
-                    text_array[max(0, total_lines - MAX_LINES_SUPPORTED): total_lines])
-                app.logger.debug(f"Text size addapted to:\n{text}")
+                app.logger.info(f"Received request with {total_lines} lines.")
+
+                # It's necessary to addapt the size of the input if it across the limit
+                MAX_LINES_SUPPORTED = 30
+                if total_lines > MAX_LINES_SUPPORTED:
+                    app.logger.info("Addapting the input text size to max of lines supported.")
+                    lines_discarded = total_lines - MAX_LINES_SUPPORTED
+                    text = '\n'.join(
+                        text_array[lines_discarded: total_lines])
+                    app.logger.debbug(f"Text adappted to: {text}")
+                    app.logger.info(f"The first {lines_discarded - 1} lines were discarded.")
 
                 context_tokens = enc.encode(text)
                 generated = 0
                 predictions = []
-
+                
+                app.logger.info("Generating list of predictions.")
                 for _ in range(nsamples // batch_size):
 
                     feed_dict = {
@@ -103,8 +110,11 @@ def interact_model(model_name='model',
                         text = text.replace("▄", "").replace("█", "")
                         if not text.isspace() and text not in predictions:
                             predictions.append(str(text))
-                app.logger.debug(f"Returning predictions:\n{predictions}")
+                app.logger.info(f"Returning list of predictions: {predictions}")
                 return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
+            
+
+
 
         app = Flask(__name__)
         api = Api(app)
