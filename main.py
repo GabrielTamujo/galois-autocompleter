@@ -88,7 +88,7 @@ def interact_model(model_name='model',
                     lines_discarded = total_lines - MAX_LINES_SUPPORTED
                     text = '\n'.join(
                         text_array[lines_discarded: total_lines])
-                    app.logger.debug(f"Text adappted to: {text}")
+                    app.logger.debug(f"Text adappted to: \n{text}")
                     app.logger.info(f"The first {lines_discarded - 1} lines were discarded.")
 
                 context_tokens = enc.encode(text)
