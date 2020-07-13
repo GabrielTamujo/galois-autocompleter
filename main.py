@@ -88,7 +88,7 @@ def interact_model(model_name='model',
                     lines_discarded = total_lines - MAX_LINES_SUPPORTED
                     text = '\n'.join(
                         text_array[lines_discarded: total_lines])
-                    app.logger.debbug(f"Text adappted to: {text}")
+                    app.logger.debug(f"Text adappted to: {text}")
                     app.logger.info(f"The first {lines_discarded - 1} lines were discarded.")
 
                 context_tokens = enc.encode(text)
@@ -113,9 +113,6 @@ def interact_model(model_name='model',
                 app.logger.info(f"Returning list of predictions: {predictions}")
                 return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
             
-
-
-
         app = Flask(__name__)
         api = Api(app)
         api.add_resource(Autocomplete, '/autocomplete')
