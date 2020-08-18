@@ -108,6 +108,8 @@ def interact_model(model_name='model',
                         text = enc.decode(out[i])
                         # Filtering noise
                         text = text.replace("▄", "").replace("█", "")
+                        # Removing new line suggestions
+                        text = text.split('\n')[0] 
                         if not text.isspace() and text not in predictions:
                             predictions.append(str(text))
                 app.logger.info(f"Returning list of predictions: {predictions}")
