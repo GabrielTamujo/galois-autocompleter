@@ -32,7 +32,7 @@ def post():
                            temperature=0,
                            top_k=10,
                            top_p=.85,
-                           return_as_list=True)
+                           return_as_list=True)[0]
 
     return Response(json.dumps({'result': result}), status=200, mimetype='application/json')
 
