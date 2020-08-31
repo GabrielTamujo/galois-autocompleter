@@ -17,10 +17,14 @@ def post():
         abort(400, description="The input text cannot be null.")
 
     result = ['1', '2']
-    
+
     sess = gpt2.start_tf_sess()
-    gpt2.load_gpt2(sess, model_name='model', model_dir='')
+    gpt2.load_gpt2(sess,
+                   model_name='model',
+                   model_dir='')
     result = gpt2.generate(sess,
+                           model_name='model',
+                           model_dir='',
                            seed=99,
                            nsamples=5,
                            batch_size=5,
