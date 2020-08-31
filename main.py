@@ -3,11 +3,14 @@ import gpt_2_simple as gpt2
 import json
 
 import logging
-
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
+sess = gpt2.start_tf_sess()
+gpt2.load_gpt2(sess,
+                model_name='model',
+                model_dir='')
 
 @app.route('/', methods=['GET'])
 def get(): return Response('', status=200, mimetype='application/json')
@@ -19,12 +22,6 @@ def post():
     if input_text == '':
         abort(400, description="The input text cannot be null.")
 
-    result = ['1', '2']
-
-    sess = gpt2.start_tf_sess()
-    gpt2.load_gpt2(sess,
-                   model_name='model',
-                   model_dir='')
     result = gpt2.generate(sess,
                            model_name='model',
                            model_dir='',
@@ -36,8 +33,7 @@ def post():
                            #    top_k=10,
                            #    top_p=.85,
                            return_as_list=True)
-    print(result)
-    logger.info(f"Returning list of predictions: {result}")
+    app.logger.info(f"Returning list of predictions: {result}")
     return Response(json.dumps({'result': result}), status=200, mimetype='application/json')
 
 
