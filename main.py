@@ -19,7 +19,7 @@ def post():
     result = ['1', '2']
     
     sess = gpt2.start_tf_sess()
-    gpt2.load_gpt2(sess, model_name='model')
+    gpt2.load_gpt2(sess, model_name='model', model_dir='')
     result = gpt2.generate(sess,
                            seed=99,
                            nsamples=5,
