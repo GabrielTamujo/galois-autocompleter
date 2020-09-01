@@ -23,6 +23,7 @@ class Autocomplete():
                 return gpt2.generate(sess,
                                      model_name='model',
                                      model_dir='',
+                                     seed=99,
                                      prefix=input_text,
                                      include_prefix=False,
                                      truncate="<|endoftext|>",
