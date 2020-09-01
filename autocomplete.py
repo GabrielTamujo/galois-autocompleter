@@ -25,8 +25,11 @@ class Autocomplete():
                                      model_dir='',
                                      prefix=input_text,
                                      include_prefix=False,
+                                     truncate="<|endoftext|>",
                                      nsamples=5,
                                      batch_size=5,
                                      length=8,
-                                     temperature=0.5,
+                                     top_k=10,
+                                     top_p=.85,
+                                     temperature=0.3,
                                      return_as_list=True)
