@@ -6,6 +6,7 @@ import gpt_2_simple as gpt2
 
 app = Flask(__name__)
 
+app.logger.info('Starting new tensorflow session.')
 with gpt2.start_tf_sess() as sess:
 
     class Autocomplete(Resource):
@@ -17,12 +18,12 @@ with gpt2.start_tf_sess() as sess:
             if input_text == '':
                 abort(400, description="The input text cannot be null.")
 
-            app.logger.info('Loading model...')
+            app.logger.info('Starting to load GPT-2 model')
             gpt2.load_gpt2(sess,
                            model_name='model',
                            model_dir='')
 
-            app.logger.info('Generating samples...')
+            app.logger.info('Starting to generate samples')
             result = gpt2.generate(sess,
                                    model_name='model',
                                    model_dir='',
