@@ -10,11 +10,11 @@ autocomplete = Autocomplete()
 
 
 @app.route('/autocomplete', methods=['GET'])
-def get(self): return Response('', status=200)
+def get(): return Response('', status=200)
 
 
 @app.route('/autocomplete', methods=['POST'])
-def post(self):
+def post():
     input_text = request.get_json(force=True)['text']
     if input_text == '':
         abort(400, description="The input text cannot be null.")
