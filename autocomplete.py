@@ -32,5 +32,5 @@ class Autocomplete():
                                      length=8,
                                      top_k=10,
                                      top_p=.85,
-                                     temperature=0.3,
+                                     temperature=0,
                                      return_as_list=True)
