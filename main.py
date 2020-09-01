@@ -8,7 +8,6 @@ app = Flask(__name__)
 
 autocomplete = Autocomplete()
 
-
 @app.route('/autocomplete', methods=['GET'])
 def get(): return Response('', status=200)
 
@@ -27,4 +26,4 @@ def post():
 
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=3030, debug=True, threaded = True)
+    app.run('0.0.0.0', port=3030, debug=True, threaded=True)
