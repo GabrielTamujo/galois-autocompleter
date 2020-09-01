@@ -13,7 +13,7 @@ autocomplete = Autocomplete()
 def get(): return Response('', status=200)
 
 
-@app.route('/autocomplete', methods=['GET', 'POST'])
+@app.route('/autocomplete', methods=['POST'])
 def post():
 
     app.logger.info('Starting to predict.')
