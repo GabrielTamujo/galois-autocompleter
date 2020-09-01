@@ -7,14 +7,14 @@ import gpt_2_simple as gpt2
 
 app = Flask(__name__)
 
-gpu_options = tf.GPUOptions(allow_growth=True)
-config = tf.ConfigProto(intra_op_parallelism_threads=0,
-                        inter_op_parallelism_threads=0,
-                        allow_soft_placement=True,
-                        gpu_options=gpu_options)
+# gpu_options = tf.GPUOptions(allow_growth=True)
+# config = tf.ConfigProto(intra_op_parallelism_threads=0,
+#                         inter_op_parallelism_threads=0,
+#                         allow_soft_placement=True,
+#                         gpu_options=gpu_options)
 
 app.logger.info('Starting new tensorflow session.')
-with tf.Session(graph=tf.Graph(), config=config) as sess:
+with gpt2.start_tf_sess() as sess:
 
     app.logger.info('Starting to load GPT-2 model.')
     gpt2.load_gpt2(sess,
