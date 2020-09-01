@@ -46,10 +46,9 @@ with tf.Session(graph=tf.Graph(), config=config) as sess:
             app.logger.info(f"Returning list of predictions: {result}")
             return Response(json.dumps({'result': result}), status=200, mimetype='application/json')
 
+    app = Flask(__name__)
+    api = Api(app)
+    api.add_resource(Autocomplete, '/autocomplete')
 
-app = Flask(__name__)
-api = Api(app)
-api.add_resource(Autocomplete, '/autocomplete')
-
-if __name__ == '__main__':
-    app.run('0.0.0.0', port=3030, debug=True)
+    if __name__ == '__main__':
+        app.run('0.0.0.0', port=3030, debug=True)
