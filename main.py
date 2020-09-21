@@ -8,6 +8,7 @@ import json
 import os
 import numpy as np
 import logging
+import utils
 
 logger = logging.getLogger(__name__)
 
@@ -19,9 +20,9 @@ os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
 
 def interact_model(model_name='model',
                    seed=99,
-                   nsamples=5,
-                   batch_size=5,
-                   length=1,
+                   nsamples=2,
+                   batch_size=2,
+                   length=15,
                    temperature=0,
                    top_k=10,
                    top_p=.85,
@@ -55,12 +56,6 @@ def interact_model(model_name='model',
         tf.set_random_seed(seed)
 
         # p = tf.random.uniform((1,), minval=.68, maxval=.98, dtype=tf.dtypes.float32, name='random_p_logits')
-        output = sample.sample_sequence(
-            hparams=hparams, length=length,
-            context=context,
-            batch_size=batch_size,
-            temperature=temperature, top_k=top_k, top_p=top_p
-        )
 
         saver = tf.train.Saver()
         ckpt = tf.train.latest_checkpoint(os.path.join(models_dir, model_name))
@@ -91,6 +86,16 @@ def interact_model(model_name='model',
                     app.logger.debug(f"Text adappted to: \n{text}")
                     app.logger.info(f"The first {lines_discarded - 1} lines were discarded.")
 
+                output = sample.sample_sequence(
+                    hparams=hparams, 
+                    length=length if body['length'] is None else body['lenght'],
+                    context=context,
+                    batch_size=batch_size if body['batch_size'] is None else body['batch_size'],
+                    temperature=temperature if body['temperature'] is None else body['temperature'], 
+                    top_k=top_k if body['top_k'] is None else body['top_k'],
+                    top_p=top_p if body['top_p'] is None else body['top_p']
+                )
+
                 context_tokens = enc.encode(text)
                 generated = 0
                 predictions = []
@@ -112,6 +117,9 @@ def interact_model(model_name='model',
                         text = text.split('\n')[0] 
                         if not text.isspace() and text not in predictions:
                             predictions.append(str(text))
+                            first_token = utils.get_first_token(str(text))
+                            if not first_token.isspace() and first_token not in predictions:
+                                predictions.append(str(text))
                 app.logger.info(f"Returning list of predictions: {predictions}")
                 return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
             
