@@ -56,6 +56,15 @@ def interact_model(model_name='model',
         tf.set_random_seed(seed)
 
         # p = tf.random.uniform((1,), minval=.68, maxval=.98, dtype=tf.dtypes.float32, name='random_p_logits')
+        output = sample.sample_sequence(
+            hparams=hparams, 
+            length=length,
+            context=context,
+            batch_size=batch_size,
+            temperature=temperature, 
+            top_k=top_k,
+            top_p=top_p
+        )
 
         saver = tf.train.Saver()
         ckpt = tf.train.latest_checkpoint(os.path.join(models_dir, model_name))
@@ -85,16 +94,6 @@ def interact_model(model_name='model',
                         text_array[lines_discarded: total_lines])
                     app.logger.debug(f"Text adappted to: \n{text}")
                     app.logger.info(f"The first {lines_discarded - 1} lines were discarded.")
-
-                output = sample.sample_sequence(
-                    hparams=hparams, 
-                    length=length if body['length'] is None else body['lenght'],
-                    context=context,
-                    batch_size=batch_size if body['batch_size'] is None else body['batch_size'],
-                    temperature=temperature if body['temperature'] is None else body['temperature'], 
-                    top_k=top_k if body['top_k'] is None else body['top_k'],
-                    top_p=top_p if body['top_p'] is None else body['top_p']
-                )
 
                 context_tokens = enc.encode(text)
                 generated = 0
