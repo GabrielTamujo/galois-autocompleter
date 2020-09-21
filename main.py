@@ -20,8 +20,8 @@ os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
 
 def interact_model(model_name='model',
                    seed=99,
-                   nsamples=2,
-                   batch_size=2,
+                   nsamples=3,
+                   batch_size=3,
                    length=15,
                    temperature=0,
                    top_k=10,
@@ -118,7 +118,7 @@ def interact_model(model_name='model',
                             predictions.append(str(text))
                             first_token = utils.get_first_token(str(text))
                             if not first_token.isspace() and first_token not in predictions:
-                                predictions.append(str(text))
+                                predictions.append(first_token)
                 app.logger.info(f"Returning list of predictions: {predictions}")
                 return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
             
