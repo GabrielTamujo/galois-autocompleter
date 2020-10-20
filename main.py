@@ -113,7 +113,8 @@ def interact_model(model_name='model',
                         # Filtering noise
                         text = text.replace("▄", "").replace("█", "")
                         # Removing new line suggestions
-                        text = text.split('\n')[0] 
+                        text = text.split('\n')[0]
+                        text = utils.escape_spaces_from_beggining(text)
                         if not text.isspace() and text not in predictions:
                             predictions.append(str(text))
                             first_token = utils.get_first_token(str(text))
