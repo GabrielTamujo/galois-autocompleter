@@ -26,9 +26,7 @@ def get_first_token(suggestion):
                   '*',
                   '%',
                   '=',
-                  '$',
                   '#',
-                  '@',
                   '!']
     regexPattern = '|'.join(map(re.escape, delimiters))
     return re.split(regexPattern, suggestion)[0]
