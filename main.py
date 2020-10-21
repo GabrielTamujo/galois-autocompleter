@@ -20,8 +20,8 @@ os.environ["KMP_AFFINITY"] = "granularity=fine,verbose,compact,1,0"
 
 def interact_model(model_name='model',
                    seed=99,
-                   nsamples=3,
-                   batch_size=3,
+                   nsamples=2,
+                   batch_size=2,
                    length=35,
                    temperature=0,
                    top_k=10,
