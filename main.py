@@ -3,6 +3,8 @@ import sample
 import model
 from flask_restful import reqparse, abort, Api, Resource
 from flask import Flask, jsonify, request, Response
+from tinydb import TinyDB
+from datetime import datetime
 import tensorflow as tf
 import json
 import os
@@ -70,86 +72,74 @@ def interact_model(model_name='model',
         ckpt = tf.train.latest_checkpoint(os.path.join(models_dir, model_name))
         saver.restore(sess, ckpt)
 
-        class Autocomplete(Resource):
-            from flask import current_app as app
-            from tinydb import TinyDB
-            from datetime import datetime
-
-            created_predictions_db = TinyDB('created_predictions.json')
-
-            def get(self): return ''
-
-            def post(self):
-                body = request.get_json(force=True)
-                if body['text'] == "":
-                    return
-
-                text = body['text']
-                text_array = body['text'].split("\n")
-                total_lines = len(text_array)
-                app.logger.info(f"Received request with {total_lines} lines.")
-
-                # It's necessary to addapt the size of the input if it across the limit
-                MAX_LINES_SUPPORTED = 30
-                if total_lines > MAX_LINES_SUPPORTED:
-                    app.logger.info("Addapting the input text size to max of lines supported.")
-                    lines_discarded = total_lines - MAX_LINES_SUPPORTED
-                    text = '\n'.join(
-                        text_array[lines_discarded: total_lines])
-                    app.logger.debug(f"Text adappted to: \n{text}")
-                    app.logger.info(f"The first {lines_discarded - 1} lines were discarded.")
-
-                context_tokens = enc.encode(text)
-                generated = 0
-                predictions = []
-                
-                app.logger.info("Generating list of predictions.")
-                for _ in range(nsamples // batch_size):
-
-                    feed_dict = {
-                        context: [context_tokens for _ in range(batch_size)]}
-                    out = sess.run(output, feed_dict=feed_dict)[
-                        :, len(context_tokens):]
-
-                    for i in range(batch_size):
-                        generated += 1
-                        text = enc.decode(out[i])
-                        # Filtering noise
-                        text = text.replace("▄", "").replace("█", "")
-                        # Removing new line suggestions
-                        text = text.split('\n')[0]
-                        text = utils.escape_spaces_from_beggining(text)
-                        if not text.isspace() and text not in predictions:
-                            predictions.append(str(text))
-                            first_token = utils.get_first_token(str(text))
-                            if not first_token.isspace() and first_token not in predictions:
-                                predictions.append(first_token)
-                created_predictions_db.insert({
-                    "predictions": predictions,
-                    "datetime": str(datetime.now())
-                })
-                app.logger.info(f"Returning list of predictions: {predictions}")
-                return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
-        
-        class Acceptance(Resource):
-            from flask import current_app as app
-            from tinydb import TinyDB
-            from datetime import datetime
-
-            accepeted_predictions_db = TinyDB('accepted_predictions.json')
-
-            def post(self):
-                app.logger.info("Persisting accepted prediction.")
-                accepeted_predictions_db.insert({
-                    "prediction": json.loads(request.data)['text'],
-                    "datetime": str(datetime.now())
-                })
-                return Response('', status=200)
-
         app = Flask(__name__)
-        api = Api(app)
-        api.add_resource(Autocomplete, '/autocomplete')
-        api.add_resource(Acceptance, '/acceptance')
+        created_predictions_db = TinyDB('created_predictions.json')
+        accepeted_predictions_db = TinyDB('accepted_predictions.json')
+
+        @app.route('/', methods=['GET'])
+        def get(): return Response('', status=200)
+
+        @app.route('/autocomplete', methods=['POST'])
+        def create_predictions():
+            body = request.get_json(force=True)
+            if body['text'] == "":
+                return
+
+            text = body['text']
+            text_array = body['text'].split("\n")
+            total_lines = len(text_array)
+            app.logger.info(f"Received request with {total_lines} lines.")
+
+            # It's necessary to addapt the size of the input if it across the limit
+            MAX_LINES_SUPPORTED = 30
+            if total_lines > MAX_LINES_SUPPORTED:
+                app.logger.info("Addapting the input text size to max of lines supported.")
+                lines_discarded = total_lines - MAX_LINES_SUPPORTED
+                text = '\n'.join(
+                    text_array[lines_discarded: total_lines])
+                app.logger.debug(f"Text adappted to: \n{text}")
+                app.logger.info(f"The first {lines_discarded - 1} lines were discarded.")
+
+            context_tokens = enc.encode(text)
+            generated = 0
+            predictions = []
+            
+            app.logger.info("Generating list of predictions.")
+            for _ in range(nsamples // batch_size):
+
+                feed_dict = {
+                    context: [context_tokens for _ in range(batch_size)]}
+                out = sess.run(output, feed_dict=feed_dict)[
+                    :, len(context_tokens):]
+
+                for i in range(batch_size):
+                    generated += 1
+                    text = enc.decode(out[i])
+                    # Filtering noise
+                    text = text.replace("▄", "").replace("█", "")
+                    # Removing new line suggestions
+                    text = text.split('\n')[0]
+                    text = utils.escape_spaces_from_beggining(text)
+                    if not text.isspace() and text not in predictions:
+                        predictions.append(str(text))
+                        first_token = utils.get_first_token(str(text))
+                        if not first_token.isspace() and first_token not in predictions:
+                            predictions.append(first_token)
+            created_predictions_db.insert({
+                "predictions": predictions,
+                "datetime": str(datetime.now())
+            })
+            app.logger.info(f"Returning list of predictions: {predictions}")
+            return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
+
+        @app.route('/acceptance', methods=['POST'])
+        def save_accepted_prediction():
+            app.logger.info("Persisting accepted prediction.")
+            accepeted_predictions_db.insert({
+                "prediction": json.loads(request.data)['text'],
+                "datetime": str(datetime.now())
+            })
+            return Response('', status=200)
 
         if __name__ == '__main__':
             app.run('0.0.0.0', port=3030, debug=True)
