@@ -57,7 +57,6 @@ def interact_model(model_name='model',
         np.random.seed(seed)
         tf.set_random_seed(seed)
 
-        # p = tf.random.uniform((1,), minval=.68, maxval=.98, dtype=tf.dtypes.float32, name='random_p_logits')
         output = sample.sample_sequence(
             hparams=hparams, 
             length=length,
@@ -88,17 +87,13 @@ def interact_model(model_name='model',
             text = body['text']
             text_array = body['text'].split("\n")
             total_lines = len(text_array)
-            app.logger.info(f"Received request with {total_lines} lines.")
 
             # It's necessary to addapt the size of the input if it across the limit
             MAX_LINES_SUPPORTED = 30
             if total_lines > MAX_LINES_SUPPORTED:
-                app.logger.info("Addapting the input text size to max of lines supported.")
                 lines_discarded = total_lines - MAX_LINES_SUPPORTED
                 text = '\n'.join(
                     text_array[lines_discarded: total_lines])
-                app.logger.debug(f"Text adappted to: \n{text}")
-                app.logger.info(f"The first {lines_discarded - 1} lines were discarded.")
 
             context_tokens = enc.encode(text)
             generated = 0
@@ -140,6 +135,16 @@ def interact_model(model_name='model',
                 "datetime": str(datetime.now())
             })
             return Response('', status=200)
+
+        @app.route('/acceptance', methods=['GET'])
+        def get_acceptance_report():
+            predictions = len(created_predictions_db.all())
+            acceptations = len(accepeted_predictions_db.all())
+            response = {
+                "predictions": predictions,
+                "acceptations": acceptations
+            }
+            return Response(json.dumps(response), status=200)
 
         if __name__ == '__main__':
             app.run('0.0.0.0', port=3030, debug=True)
