@@ -141,7 +141,7 @@ def interact_model(model_name='model',
                         if not first_token.isspace() and first_token not in predictions:
                             predictions.append(first_token)
             created_predictions = CreatedPredictions(
-                predictions_list=predictions_list, datetime=str(datetime.now()))
+                predictions_list=predictions, datetime=str(datetime.now()))
             create_predictions.save()
             app.logger.info(f"Returning list of predictions: {predictions}")
             return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
