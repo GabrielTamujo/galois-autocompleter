@@ -72,6 +72,10 @@ def interact_model(model_name='model',
 
         class Autocomplete(Resource):
             from flask import current_app as app
+            from tinydb import TinyDB
+            from datetime import datetime
+
+            created_predictions_db = TinyDB('created_predictions.json')
 
             def get(self): return ''
 
@@ -120,12 +124,32 @@ def interact_model(model_name='model',
                             first_token = utils.get_first_token(str(text))
                             if not first_token.isspace() and first_token not in predictions:
                                 predictions.append(first_token)
+                created_predictions_db.insert({
+                    "predictions": predictions,
+                    "datetime": str(datetime.now())
+                })
                 app.logger.info(f"Returning list of predictions: {predictions}")
                 return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
-            
+        
+        class Acceptance(Resource):
+            from flask import current_app as app
+            from tinydb import TinyDB
+            from datetime import datetime
+
+            accepeted_predictions_db = TinyDB('accepted_predictions.json')
+
+            def post(self):
+                app.logger.info("Persisting accepted prediction.")
+                accepeted_predictions_db.insert({
+                    "prediction": json.loads(request.data)['text'],
+                    "datetime": str(datetime.now())
+                })
+                return Response('', status=200)
+
         app = Flask(__name__)
         api = Api(app)
         api.add_resource(Autocomplete, '/autocomplete')
+        api.add_resource(Acceptance, '/acceptance')
 
         if __name__ == '__main__':
             app.run('0.0.0.0', port=3030, debug=True)
