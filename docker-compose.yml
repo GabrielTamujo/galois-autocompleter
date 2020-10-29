@@ -11,7 +11,7 @@ services:
     hostname: galois-autocompleter
     volumes:
       - type: bind
-        source: ./opt-models/$model
+        source: ~/opt-models/$model
         target: /galois/model
 
   galois-mongo:
@@ -19,7 +19,7 @@ services:
     hostname: galois-mongo
     volumes:
       - type: bind
-        source: ./galois/data
+        source: ~/galois/data
         target: /data/db
 
 
