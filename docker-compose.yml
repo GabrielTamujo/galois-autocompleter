@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  galois-autocompleter:
+    image: galois/nvidia
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 3030:3030
+    hostname: galois-autocompleter
+    volumes:
+      - type: bind
+        source: ./opt-models/$model
+        target: /galois/model
+
+  galois-mongo:
+    image: mongo
+    hostname: galois-mongo
+    volumes:
+      - type: bind
+        source: ./galois/data
+        target: /data/db
+
+

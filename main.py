@@ -3,7 +3,7 @@ import sample
 import model
 from flask_restful import reqparse, abort, Api, Resource
 from flask import Flask, jsonify, request, Response
-from tinydb import TinyDB
+from flask_mongoengine import MongoEngine
 from datetime import datetime
 import tensorflow as tf
 import json
@@ -52,11 +52,9 @@ def interact_model(model_name='model',
                             allow_soft_placement=True, gpu_options=gpu_options)
 
     with tf.Session(graph=tf.Graph(), config=config) as sess:
-
         context = tf.placeholder(tf.int32, [batch_size, None])
         np.random.seed(seed)
         tf.set_random_seed(seed)
-
         output = sample.sample_sequence(
             hparams=hparams, 
             length=length,
@@ -66,14 +64,36 @@ def interact_model(model_name='model',
             top_k=top_k,
             top_p=top_p
         )
-
         saver = tf.train.Saver()
         ckpt = tf.train.latest_checkpoint(os.path.join(models_dir, model_name))
         saver.restore(sess, ckpt)
 
         app = Flask(__name__)
-        created_predictions_db = TinyDB('created_predictions.json')
-        accepeted_predictions_db = TinyDB('accepted_predictions.json')
+        app.config['MONGODB_SETTINGS'] = {
+            'db': 'galois',
+            'host': 'galois-mongo',
+            'port': 27017
+        }
+        db = MongoEngine()
+        db.init_app(app)
+
+        class CreatedPredictions(db.Document):
+            predictions_list = db.StringField()
+            datetime = db.StringField()
+            def to_json(self):
+                return {
+                    "predictions_list": self.predictions_list,
+                    "datetime": self.datetime
+                    }
+        
+        class AcceptedPrediction(db.Document):
+            prediction = db.StringField()
+            datetime = db.StringField()
+            def to_json(self):
+                return {
+                    "prediction": self.prediction,
+                    "datetime": self.datetime
+                    }
 
         @app.route('/', methods=['GET'])
         def get(): return Response('', status=200)
@@ -120,31 +140,29 @@ def interact_model(model_name='model',
                         first_token = utils.get_first_token(str(text))
                         if not first_token.isspace() and first_token not in predictions:
                             predictions.append(first_token)
-            created_predictions_db.insert({
-                "predictions": predictions,
-                "datetime": str(datetime.now())
-            })
+            created_predictions = CreatedPredictions(
+                predictions=predictions, datetime=str(datetime.now()))
+            create_predictions.save()
             app.logger.info(f"Returning list of predictions: {predictions}")
             return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
 
         @app.route('/acceptance', methods=['POST'])
         def save_accepted_prediction():
             app.logger.info("Persisting accepted prediction.")
-            accepeted_predictions_db.insert({
-                "prediction": json.loads(request.data)['text'],
-                "datetime": str(datetime.now())
-            })
+            accepeted_prediction = AcceptedPrediction(
+                prediction=json.loads(request.data)['text'], datetime=str(datetime.now()))
+            accepeted_prediction.save()
             return Response('', status=200)
 
-        @app.route('/acceptance', methods=['GET'])
-        def get_acceptance_report():
-            predictions = len(created_predictions_db.all())
-            acceptations = len(accepeted_predictions_db.all())
-            response = {
-                "predictions": predictions,
-                "acceptations": acceptations
-            }
-            return Response(json.dumps(response), status=200)
+        # @app.route('/acceptance', methods=['GET'])
+        # def get_acceptance_report():
+        #     predictions = len(created_predictions_db.all())
+        #     acceptations = len(accepeted_predictions_db.all())
+        #     response = {
+        #         "predictions": predictions,
+        #         "acceptations": acceptations
+        #     }
+        #     return Response(json.dumps(response), status=200)
 
         if __name__ == '__main__':
             app.run('0.0.0.0', port=3030, debug=True)
