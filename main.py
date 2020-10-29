@@ -147,7 +147,7 @@ def interact_model(model_name='model',
             return Response(json.dumps(response), status=200)
 
         if __name__ == '__main__':
-            app.run('0.0.0.0', port=3030, debug=True)
+            app.run('0.0.0.0', port=3030, debug=True, threaded=True)
 
 
 interact_model()
