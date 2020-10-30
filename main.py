@@ -4,10 +4,10 @@ from pymongo import MongoClient
 from datetime import datetime
 import tensorflow as tf
 import numpy as np
+import predictions
 import logging
 import encoder
 import sample
-import utils
 import model
 import json
 import os
@@ -48,6 +48,7 @@ def interact_model(model_name='model',
             "Can't get samples longer than window size: %s" % hparams.n_ctx)
 
     gpu_options = tf.GPUOptions(allow_growth=True)
+
     config = tf.ConfigProto(intra_op_parallelism_threads=0, 
                             inter_op_parallelism_threads=0,
                             allow_soft_placement=True, 
@@ -97,30 +98,15 @@ def interact_model(model_name='model',
                     text_array[lines_discarded: total_lines])
 
             context_tokens = enc.encode(text)
-            generated = 0
             predictions = []
             
             app.logger.info("Generating list of predictions.")
             for _ in range(nsamples // batch_size):
-
                 feed_dict = {
                     context: [context_tokens for _ in range(batch_size)]}
                 out = sess.run(output, feed_dict=feed_dict)[
                     :, len(context_tokens):]
-
-                for i in range(batch_size):
-                    generated += 1
-                    text = enc.decode(out[i])
-                    # Filtering noise
-                    text = text.replace("▄", "").replace("█", "")
-                    # Removing new line suggestions
-                    text = text.split('\n')[0]
-                    text = utils.escape_spaces_from_beggining(text)
-                    if not text.isspace() and text not in predictions:
-                        predictions.append(str(text))
-                        first_token = utils.get_first_token(str(text))
-                        if not first_token.isspace() and first_token not in predictions:
-                            predictions.append(first_token)
+                predictions = predictions.process(out)
             
             app.logger.info("Saving list of predictions.")
             created_predictions.insert_one({
@@ -146,7 +132,7 @@ def interact_model(model_name='model',
                 "predictions": created_predictions.count(),
                 "acceptations": accepted_predictions.count()
             }
-            return Response(json.dumps(response), status=200)
+            return Response(json.dumps(response), status=200, mimetype='application/json')
 
         if __name__ == '__main__':
             app.run('0.0.0.0', port=3030, debug=True)
