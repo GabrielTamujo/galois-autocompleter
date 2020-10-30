@@ -27,8 +27,8 @@ services:
       - type: volume
         source: mongodb
         target: /tmp
-
-  volumes:
-    mongodb:
+        
+volumes:
+  mongodb:
 
 
