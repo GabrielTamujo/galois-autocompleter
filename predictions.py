@@ -12,7 +12,7 @@ def process(model_outputs, enc):
                 "prediction": str(prediction),
                 "type": "MULTIPLE_TOKENS"
                 })
-            first_token = utils.get_first_token(str(prediction))
+            first_token = get_first_token(str(prediction))
             if is_valid_prediction(prediction) and first_token not in predictions:
                 predictions.append({
                     "prediction": first_token,
