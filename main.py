@@ -1,16 +1,16 @@
-import encoder
-import sample
-import model
 from flask_restful import reqparse, abort, Api, Resource
 from flask import Flask, jsonify, request, Response
-from flask_mongoengine import MongoEngine
+from pymongo import MongoClient
 from datetime import datetime
 import tensorflow as tf
-import json
-import os
 import numpy as np
 import logging
+import encoder
+import sample
 import utils
+import model
+import json
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -48,8 +48,10 @@ def interact_model(model_name='model',
             "Can't get samples longer than window size: %s" % hparams.n_ctx)
 
     gpu_options = tf.GPUOptions(allow_growth=True)
-    config = tf.ConfigProto(intra_op_parallelism_threads=0, inter_op_parallelism_threads=0,
-                            allow_soft_placement=True, gpu_options=gpu_options)
+    config = tf.ConfigProto(intra_op_parallelism_threads=0, 
+                            inter_op_parallelism_threads=0,
+                            allow_soft_placement=True, 
+                            gpu_options=gpu_options)
 
     with tf.Session(graph=tf.Graph(), config=config) as sess:
         context = tf.placeholder(tf.int32, [batch_size, None])
@@ -69,31 +71,11 @@ def interact_model(model_name='model',
         saver.restore(sess, ckpt)
 
         app = Flask(__name__)
-        app.config['MONGODB_SETTINGS'] = {
-            'db': 'galois',
-            'host': 'galois-mongo',
-            'port': 27017
-        }
-        db = MongoEngine()
-        db.init_app(app)
-
-        class CreatedPredictions(db.Document):
-            predictions_list = db.StringField()
-            datetime = db.StringField()
-            def to_json(self):
-                return {
-                    "predictions_list": self.predictions_list,
-                    "datetime": self.datetime
-                    }
         
-        class AcceptedPrediction(db.Document):
-            prediction = db.StringField()
-            datetime = db.StringField()
-            def to_json(self):
-                return {
-                    "prediction": self.prediction,
-                    "datetime": self.datetime
-                    }
+        client = MongoClient('galois-mongo', 27017)
+        db = client.galois
+        created_predictions = db.created_predictions
+        accepted_predictions = db.accepted_predictions
 
         @app.route('/', methods=['GET'])
         def get(): return Response('', status=200)
@@ -108,7 +90,6 @@ def interact_model(model_name='model',
             text_array = body['text'].split("\n")
             total_lines = len(text_array)
 
-            # It's necessary to addapt the size of the input if it across the limit
             MAX_LINES_SUPPORTED = 30
             if total_lines > MAX_LINES_SUPPORTED:
                 lines_discarded = total_lines - MAX_LINES_SUPPORTED
@@ -140,18 +121,22 @@ def interact_model(model_name='model',
                         first_token = utils.get_first_token(str(text))
                         if not first_token.isspace() and first_token not in predictions:
                             predictions.append(first_token)
-            created_predictions = CreatedPredictions(
-                predictions_list=predictions, datetime=str(datetime.now()))
-            create_predictions.save()
+            
+            created_predictions.insert_one({
+                "predictions_list": predictions,
+                "datetime": str(datetime.now())
+            })
+
             app.logger.info(f"Returning list of predictions: {predictions}")
             return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
 
         @app.route('/acceptance', methods=['POST'])
         def save_accepted_prediction():
             app.logger.info("Persisting accepted prediction.")
-            accepeted_prediction = AcceptedPrediction(
-                prediction=json.loads(request.data)['text'], datetime=str(datetime.now()))
-            accepeted_prediction.save()
+            accepted_predictions.insert_one({
+                "prediction": json.loads(request.data)['text'],
+                "datetime": str(datetime.now())
+            })
             return Response('', status=200)
 
         # @app.route('/acceptance', methods=['GET'])
