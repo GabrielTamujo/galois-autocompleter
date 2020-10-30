@@ -1,9 +1,9 @@
 import re
 
-def process(model_outputs, enc):
+def process(model_outputs, enc, batch_size):
     predictions = []
-    for output in model_outputs:
-        prediction = enc.decode(output)
+    for i in range(batch_size):
+        prediction = enc.decode(output[i])
         prediction = filter_noise(prediction)
         prediction = remove_new_line(prediction)
         prediction = escape_spaces_from_beggining(prediction)

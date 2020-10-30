@@ -108,7 +108,7 @@ def interact_model(model_name='model',
                 out = sess.run(output, feed_dict=feed_dict)[
                     :, len(context_tokens):]
                 app.logger.info(f"Model output: {out}")
-                predictions_list = predictions.process(out, enc)
+                predictions_list = predictions.process(out, enc, batch_size)
                 app.logger.info(f"Predictions list: {predictions_list}")
             
             if predictions_list: 
