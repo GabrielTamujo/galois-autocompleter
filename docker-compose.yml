@@ -3,6 +3,7 @@ version: '3.7'
 services:
   galois-autocompleter:
     image: galois/nvidia
+    runtime: nvidia
     build:
       context: ./
       dockerfile: Dockerfile
