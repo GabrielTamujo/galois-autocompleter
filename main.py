@@ -98,7 +98,6 @@ def interact_model(model_name='model',
                     text_array[lines_discarded: total_lines])
 
             context_tokens = enc.encode(text)
-            predictions = []
             
             app.logger.info("Generating list of predictions.")
             for _ in range(nsamples // batch_size):
