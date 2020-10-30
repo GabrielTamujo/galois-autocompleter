@@ -13,6 +13,9 @@ services:
       - type: bind
         source: ~/opt-models/$model
         target: /galois/model
+      - type: volume
+        source: mongodb
+        target: /galois/socket
 
   galois-mongo:
     image: mongo
@@ -21,5 +24,11 @@ services:
       - type: bind
         source: ~/galois/data
         target: /data/db
+      - type: volume
+        source: mongodb
+        target: /tmp
+
+  volumes:
+    mongodb:
 
 

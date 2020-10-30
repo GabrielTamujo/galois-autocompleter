@@ -72,7 +72,7 @@ def interact_model(model_name='model',
 
         app = Flask(__name__)
         
-        client = MongoClient('galois-mongo', 27017)
+        client = MongoClient('/galois/socket/mongodb-27017.sock')
         db = client.galois
         created_predictions = db.created_predictions
         accepted_predictions = db.accepted_predictions
