@@ -3,8 +3,8 @@ from flask import Flask, jsonify, request, Response
 from pymongo import MongoClient
 from datetime import datetime
 import tensorflow as tf
+import prediction_utils
 import numpy as np
-import predictions
 import logging
 import encoder
 import sample
@@ -98,8 +98,8 @@ def interact_model(model_name='model',
                     text_array[lines_discarded: total_lines])
 
             context_tokens = enc.encode(text)
-
-            predictions_list = []
+            generated = 0
+            predictions = []
             
             app.logger.info("Generating list of predictions.")
             for _ in range(nsamples // batch_size):
@@ -107,20 +107,29 @@ def interact_model(model_name='model',
                     context: [context_tokens for _ in range(batch_size)]}
                 out = sess.run(output, feed_dict=feed_dict)[
                     :, len(context_tokens):]
-                app.logger.info(f"Model output: {out}")
-                predictions_list = predictions.process(out, enc, batch_size)
-                app.logger.info(f"Predictions list: {predictions_list}")
-            
-            if predictions_list: 
-                app.logger.info("Saving list of predictions.")
-                created_predictions.insert_one({
-                    "predictions_list": predictions_list,
-                    "datetime": str(datetime.now())
-                })
-                app.logger.info(f"Returning list of predictions: {predictions_list}")
-                return Response(json.dumps({'result': predictions_list}), status=200, mimetype='application/json')
-            
-            return Response('No suggestions.', status=200, mimetype='application/json')
+
+                for i in range(batch_size):
+                    prediction = prediction_utils.process(enc.decode(out[i]))
+                    if prediction_utils.is_valid_prediction(prediction) and text not in predictions:
+                        predictions.append({
+                            "prediction": str(prediction),
+                            "type": "MULTIPLE_TOKENS"
+                            })
+                        first_token = prediction_utils.get_first_token(str(text))
+                        if prediction_utils.is_valid_prediction(first_token) and first_token not in predictions:
+                            predictions.append({
+                                "prediction": first_token,
+                                "type": "SINGLE_TOKEN"
+                                })
+                    
+            app.logger.info("Saving list of predictions.")
+            created_predictions.insert_one({
+                "predictions_list": predictions,
+                "datetime": str(datetime.now())
+            })
+
+            app.logger.info(f"Returning list of predictions: {predictions}")
+            return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
 
         @app.route('/acceptance', methods=['POST'])
         def save_accepted_prediction():
@@ -137,7 +146,7 @@ def interact_model(model_name='model',
                 "predictions": created_predictions.count(),
                 "acceptations": accepted_predictions.count()
             }
-            return Response(json.dumps(response), status=200, mimetype='application/json')
+            return Response(json.dumps(response), status=200)
 
         if __name__ == '__main__':
             app.run('0.0.0.0', port=3030, debug=True)
