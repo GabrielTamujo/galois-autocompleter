@@ -98,6 +98,8 @@ def interact_model(model_name='model',
                     text_array[lines_discarded: total_lines])
 
             context_tokens = enc.encode(text)
+
+            predictions_list = []
             
             app.logger.info("Generating list of predictions.")
             for _ in range(nsamples // batch_size):
@@ -105,16 +107,18 @@ def interact_model(model_name='model',
                     context: [context_tokens for _ in range(batch_size)]}
                 out = sess.run(output, feed_dict=feed_dict)[
                     :, len(context_tokens):]
-                predictions = predictions.process(out)
+                predictions_list = predictions.process(out)
             
-            app.logger.info("Saving list of predictions.")
-            created_predictions.insert_one({
-                "predictions_list": predictions,
-                "datetime": str(datetime.now())
-            })
-
-            app.logger.info(f"Returning list of predictions: {predictions}")
-            return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
+            if predictions_list: 
+                app.logger.info("Saving list of predictions.")
+                created_predictions.insert_one({
+                    "predictions_list": predictions_list,
+                    "datetime": str(datetime.now())
+                })
+                app.logger.info(f"Returning list of predictions: {predictions_list}")
+                return Response(json.dumps({'result': predictions_list}), status=200, mimetype='application/json')
+            
+            return Response('No suggestions.', status=200, mimetype='application/json')
 
         @app.route('/acceptance', methods=['POST'])
         def save_accepted_prediction():
