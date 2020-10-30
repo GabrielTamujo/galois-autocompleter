@@ -122,6 +122,7 @@ def interact_model(model_name='model',
                         if not first_token.isspace() and first_token not in predictions:
                             predictions.append(first_token)
             
+            app.logger.info("Saving list of predictions.")
             created_predictions.insert_one({
                 "predictions_list": predictions,
                 "datetime": str(datetime.now())
