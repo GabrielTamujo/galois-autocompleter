@@ -110,25 +110,29 @@ def interact_model(model_name='model',
 
                 for i in range(batch_size):
                     prediction = prediction_utils.process(enc.decode(out[i]))
-                    if prediction_utils.is_valid_prediction(prediction) and text not in predictions:
+                    if prediction_utils.is_valid_prediction(prediction) and prediction not in predictions:
                         predictions.append({
                             "prediction": str(prediction),
                             "type": "MULTIPLE_TOKENS"
                             })
-                        first_token = prediction_utils.get_first_token(str(text))
+                        first_token = prediction_utils.get_first_token(str(prediction))
                         if prediction_utils.is_valid_prediction(first_token) and first_token not in predictions:
                             predictions.append({
                                 "prediction": first_token,
                                 "type": "SINGLE_TOKEN"
                                 })
-                    
-            app.logger.info("Saving list of predictions.")
+            
+            if not predictions: 
+                app.logger.info("No valid productions generated.")
+                return Response([], status=200, mimetype='application/json')
+            
+            app.logger.info("Saving predictions.")
             created_predictions.insert_one({
                 "predictions_list": predictions,
                 "datetime": str(datetime.now())
             })
 
-            app.logger.info(f"Returning list of predictions: {predictions}")
+            app.logger.info(f"Returning predictions: {predictions}")
             return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
 
         @app.route('/acceptance', methods=['POST'])
