@@ -72,10 +72,10 @@ def interact_model(model_name='model',
 
         app = Flask(__name__)
         
-        # client = MongoClient('galois-mongo', 27017)
-        # db = client.galois
-        # created_predictions = db.created_predictions
-        # accepted_predictions = db.accepted_predictions
+        client = MongoClient('galois-mongo', 27017)
+        db = client.galois
+        created_predictions = db.created_predictions
+        accepted_predictions = db.accepted_predictions
 
         @app.route('/', methods=['GET'])
         def get(): return Response('', status=200)
@@ -122,11 +122,11 @@ def interact_model(model_name='model',
                         if not first_token.isspace() and first_token not in predictions:
                             predictions.append(first_token)
             
-            # app.logger.info("Saving list of predictions.")
-            # created_predictions.insert_one({
-            #     "predictions_list": predictions,
-            #     "datetime": str(datetime.now())
-            # })
+            app.logger.info("Saving list of predictions.")
+            created_predictions.insert_one({
+                "predictions_list": predictions,
+                "datetime": str(datetime.now())
+            })
 
             app.logger.info(f"Returning list of predictions: {predictions}")
             return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
@@ -134,21 +134,19 @@ def interact_model(model_name='model',
         @app.route('/acceptance', methods=['POST'])
         def save_accepted_prediction():
             app.logger.info("Persisting accepted prediction.")
-            # accepted_predictions.insert_one({
-            #     "prediction": json.loads(request.data)['text'],
-            #     "datetime": str(datetime.now())
-            # })
+            accepted_predictions.insert_one({
+                "prediction": json.loads(request.data)['text'],
+                "datetime": str(datetime.now())
+            })
             return Response('', status=200)
 
-        # @app.route('/acceptance', methods=['GET'])
-        # def get_acceptance_report():
-        #     predictions = len(created_predictions_db.all())
-        #     acceptations = len(accepeted_predictions_db.all())
-        #     response = {
-        #         "predictions": predictions,
-        #         "acceptations": acceptations
-        #     }
-        #     return Response(json.dumps(response), status=200)
+        @app.route('/acceptance', methods=['GET'])
+        def get_acceptance_report():
+            response = {
+                "predictions": created_predictions.count(),
+                "acceptations": accepted_predictions.count()
+            }
+            return Response(json.dumps(response), status=200)
 
         if __name__ == '__main__':
             app.run('0.0.0.0', port=3030, debug=True)
