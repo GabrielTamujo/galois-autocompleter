@@ -1,6 +1,6 @@
 import re
 
-def process(model_outputs):
+def process(model_outputs, enc):
     predictions = []
     for output in model_outputs:
         prediction = enc.decode(output)
