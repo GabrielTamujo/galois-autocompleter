@@ -6,13 +6,13 @@ def process(model_outputs):
         prediction = enc.decode(output)
         prediction = filter_noise(prediction)
         prediction = remove_new_line(prediction)
-        prediction = escape_spaces_from_beggining(text)
-        if is_valid_prediction(prediction) and text not in predictions:
+        prediction = escape_spaces_from_beggining(prediction)
+        if is_valid_prediction(prediction) and prediction not in predictions:
             predictions.append({
-                "prediction": str(text),
+                "prediction": str(prediction),
                 "type": "MULTIPLE_TOKENS"
                 })
-            first_token = utils.get_first_token(str(text))
+            first_token = utils.get_first_token(str(prediction))
             if is_valid_prediction(prediction) and first_token not in predictions:
                 predictions.append({
                     "prediction": first_token,
