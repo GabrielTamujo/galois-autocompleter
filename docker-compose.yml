@@ -20,6 +20,8 @@ services:
   galois-mongo:
     image: mongo
     hostname: galois-mongo
+    ports:
+      - 27017:27017
     volumes:
       - type: bind
         source: ~/galois/data
