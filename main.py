@@ -112,14 +112,14 @@ def interact_model(model_name='model',
                 for i in range(batch_size):
                     prediction = prediction_utils.process(enc.decode(out[i]))
                     if prediction_utils.is_valid_prediction(prediction) and prediction not in predicted_tokens:
-                        predicted_tokens.append()
+                        predicted_tokens.append(prediction)
                         prediction_response_list.append({
                             "prediction": str(prediction),
                             "type": "MULTIPLE_TOKENS"
                             })
                         first_token = prediction_utils.get_first_token(str(prediction))
                         if prediction_utils.is_valid_prediction(first_token) and first_token not in predicted_tokens:
-                            predicted_tokens.append()
+                            predicted_tokens.append(first_token)
                             prediction_response_list.append({
                                 "prediction": first_token,
                                 "type": "SINGLE_TOKEN"
