@@ -99,7 +99,8 @@ def interact_model(model_name='model',
 
             context_tokens = enc.encode(text)
             generated = 0
-            predictions = []
+            prediction_response_list = []
+            predicted_tokens = []
             
             app.logger.info("Generating list of predictions.")
             for _ in range(nsamples // batch_size):
@@ -110,30 +111,32 @@ def interact_model(model_name='model',
 
                 for i in range(batch_size):
                     prediction = prediction_utils.process(enc.decode(out[i]))
-                    if prediction_utils.is_valid_prediction(prediction) and prediction not in predictions:
-                        predictions.append({
+                    if prediction_utils.is_valid_prediction(prediction) and prediction not in predicted_tokens:
+                        predicted_tokens.append()
+                        prediction_response_list.append({
                             "prediction": str(prediction),
                             "type": "MULTIPLE_TOKENS"
                             })
                         first_token = prediction_utils.get_first_token(str(prediction))
-                        if prediction_utils.is_valid_prediction(first_token) and first_token not in predictions:
-                            predictions.append({
+                        if prediction_utils.is_valid_prediction(first_token) and first_token not in predicted_tokens:
+                            predicted_tokens.append()
+                            prediction_response_list.append({
                                 "prediction": first_token,
                                 "type": "SINGLE_TOKEN"
                                 })
             
-            if not predictions: 
+            if not prediction_response_list: 
                 app.logger.info("No valid productions generated.")
                 return Response([], status=200, mimetype='application/json')
             
             app.logger.info("Saving predictions.")
             created_predictions.insert_one({
-                "predictions_list": predictions,
+                "predictions_list": prediction_response_list,
                 "datetime": str(datetime.now())
             })
 
-            app.logger.info(f"Returning predictions: {predictions}")
-            return Response(json.dumps({'result': predictions}), status=200, mimetype='application/json')
+            app.logger.info(f"Returning predictions: {prediction_response_list}")
+            return Response(json.dumps({'result': prediction_response_list}), status=200, mimetype='application/json')
 
         @app.route('/acceptance', methods=['POST'])
         def save_accepted_prediction():
