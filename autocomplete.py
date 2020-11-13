@@ -5,7 +5,7 @@ import tensorflow as tf
 class Autocomplete():
 
     def __init__(self):
-        self.sess = start_tf_sess()
+        self.sess = self.start_tf_sess()
         self.graph = tf.get_default_graph()
         self.load_gpt2()
 
