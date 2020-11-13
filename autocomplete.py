@@ -23,7 +23,7 @@ class Autocomplete():
                 gpt2.load_gpt2(sess,
                                model_name='model',
                                model_dir='',
-                               multi_gpu=True)
+                               multi_gpu=False)
 
     def predict(self, request_body):
         with self.sess.as_default() as sess:
