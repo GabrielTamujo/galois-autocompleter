@@ -17,7 +17,7 @@ class Autocomplete():
     top_k=10
     top_p=.85
     
-    def __init__():
+    def __init__(self):
         self.sess = self.start_tf_sess()
         self.graph = tf.get_default_graph()
         self.encoder = encoder.get_encoder()
