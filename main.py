@@ -89,7 +89,7 @@ def interact_model(model_name='model',
         def get(): return Response('', status=200)
 
         @app.route('/autocomplete', methods=['POST'])
-        @limiter.limit("5/second", override_defaults=False)
+        @limiter.limit("3/second", override_defaults=False)
         def create_predictions():
             body = request.get_json(force=True)
             if body['text'] == "":
