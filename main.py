@@ -1,7 +1,7 @@
 from flask_restful import reqparse, abort, Api, Resource
 from flask import Flask, jsonify, request, Response
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+# from flask_limiter import Limiter
+# from flask_limiter.util import get_remote_address
 from pymongo import MongoClient
 from datetime import datetime
 import tensorflow as tf
@@ -74,11 +74,11 @@ def interact_model(model_name='model',
         saver.restore(sess, ckpt)
 
         app = Flask(__name__)
-        limiter = Limiter(
-            app,
-            key_func=get_remote_address,
-            default_limits=["5000 per day", "200 per hour"]
-        )
+        # limiter = Limiter(
+        #     app,
+        #     key_func=get_remote_address,
+        #     default_limits=["5000 per day", "200 per hour"]
+        # )
 
         client = MongoClient('/galois/socket/mongodb-27017.sock')
         db = client.galois
@@ -89,7 +89,7 @@ def interact_model(model_name='model',
         def get(): return Response('', status=200)
 
         @app.route('/autocomplete', methods=['POST'])
-        @limiter.limit("4/second", override_defaults=False)
+        # @limiter.limit("4/second", override_defaults=False)
         def create_predictions():
             body = request.get_json(force=True)
             if body['text'] == "":
