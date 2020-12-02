@@ -1,7 +1,7 @@
 import torch
 from config import Config
 from transformers import GPT2TokenizerFast, GPT2LMHeadModel
-from .suggestions.suggestions import Suggestions
+from suggestions.suggestions import Suggestions
 
 class PythonPredictor:
 
