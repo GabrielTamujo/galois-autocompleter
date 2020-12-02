@@ -4,11 +4,9 @@ from transformers import GPT2TokenizerFast, GPT2LMHeadModel
 from suggestions.suggestions import Suggestions
 
 class PythonPredictor:
-
-    DEFAULT_MODEL_NAME = "distilgpt2"
-
+    
     def __init__(self, config):
-        model_name_or_path = config.get("model_name_or_path", DEFAULT_MODEL_NAME)
+        model_name_or_path = config.get("model_name_or_path", "distilgpt2")
         self.device = self.__get_device()
         self.tokenizer = GPT2TokenizerFast.from_pretrained(model_name_or_path)
         self.model = GPT2LMHeadModel.from_pretrained(model_name_or_path).to(self.device)
