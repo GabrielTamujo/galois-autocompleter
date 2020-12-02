@@ -1,5 +1,5 @@
-from short_suggestion import ShortSuggestion
-from long_suggestion import LongSuggestion
+from .short_suggestion import ShortSuggestion
+from .long_suggestion import LongSuggestion
 
 class Suggestions:
     
