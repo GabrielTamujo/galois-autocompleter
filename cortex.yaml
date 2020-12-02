@@ -1,7 +1,5 @@
 - name: galois-autocompleter
   kind: RealtimeAPI
-  endpoint: autocomplete
-  local_port: 3030
   predictor:
     type: python
     path: predictor.py
