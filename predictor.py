@@ -31,7 +31,7 @@ class PythonPredictor:
 
         predictions_list = []
         for sample_output in sample_outputs:
-            predictions_list.append(self.tokenizer.decode(sample_output[len(input_tokens[0]):].tolist(), skip_special_tokens=True))
+            predictions_list.append(self.tokenizer.decode(sample_output[input_ids_length:].tolist(), skip_special_tokens=True))
 
         return Suggestions(predictions_list)
 
