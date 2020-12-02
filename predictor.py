@@ -4,13 +4,13 @@ from transformers import GPT2TokenizerFast, GPT2LMHeadModel
 from suggestions.suggestions import Suggestions
 
 class PythonPredictor:
-    
+
     def __init__(self, config):
         model_name_or_path = config.get("model_name_or_path", "distilgpt2")
         self.device = self.__get_device()
         self.tokenizer = GPT2TokenizerFast.from_pretrained(model_name_or_path)
         self.model = GPT2LMHeadModel.from_pretrained(model_name_or_path).to(self.device)
-        self.config = Config(config, model.config.max_position_embeddings)
+        self.config = Config(config, self.model.config.max_position_embeddings)
 
     def predict(self, payload):
         input_text = payload["text"]
