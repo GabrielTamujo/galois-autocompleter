@@ -37,7 +37,9 @@ class PythonPredictor:
 
         predictions_list = []
         for sample_output in sample_outputs:
-            predictions_list.append(self.tokenizer.decode(sample_output[input_ids_length:].tolist(), skip_special_tokens=True, clean_up_tokenization_spaces=True))
+            predicted_sequence = sample_output[input_ids_length:].tolist()
+            print(predicted_sequence)
+            predictions_list.append(self.tokenizer.decode(predicted_sequence, skip_special_tokens=True, clean_up_tokenization_spaces=True))
         
         print(predictions_list)
 
