@@ -9,7 +9,7 @@ class PythonPredictor:
     def __init__(self, config):
         model_name_or_path = config.get("model_name_or_path", "distilgpt2")
         self.device = self.__get_device()
-        self.tokenizer = GPT2TokenizerFast.from_pretrained(model_name_or_path, add_prefix_space=True)
+        self.tokenizer = GPT2TokenizerFast.from_pretrained(model_name_or_path)
         self.model = GPT2LMHeadModel.from_pretrained(model_name_or_path).to(self.device)
         self.config = Config(config, self.model.config.max_position_embeddings)
 
@@ -21,7 +21,6 @@ class PythonPredictor:
         input_ids_length = len(input_ids[0])
         input_ids = input_ids[max(input_ids_length - self.config.MAX_INPUT_TOKENS_LENGTH, 0):]
 
-        #TODO: verify if bad_words_ids works to avoid '\n'
         sample_outputs = self.model.generate(
             input_ids=input_ids,
             top_p=self.config.TOP_P,
