@@ -17,7 +17,7 @@ class PythonPredictor:
         request = json.loads(payload)
         input_text = request["text"]
         input_text = input_text[max(len(input_text) - self.config.MAX_INPUT_TEXT_LENGTH, 0):]
-        input_ids = self.tokenizer.encode(input_text, add_special_tokens=False, return_tensors="pt").to(self.device)
+        input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
         input_ids_length = len(input_ids[0])
         input_ids = input_ids[max(input_ids_length - self.config.MAX_INPUT_TOKENS_LENGTH, 0):]
 
@@ -32,10 +32,12 @@ class PythonPredictor:
             do_sample=True,
         )
 
+        print(sample_outputs)
+
         predictions_list = []
         for sample_output in sample_outputs:
             predicted_sequence = sample_output[input_ids_length:].tolist()
-            predictions_list.append(self.tokenizer.decode(predicted_sequence, skip_special_tokens=True, clean_up_tokenization_spaces=True))
+            predictions_list.append(self.tokenizer.decode(predicted_sequence, clean_up_tokenization_spaces=True))
 
         return json.dumps(create_suggestions(predictions_list))
 
