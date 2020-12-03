@@ -15,11 +15,12 @@ class PythonPredictor:
     def predict(self, payload):
         input_text = payload["text"]
         input_text = input_text[max(len(input_text) - self.config.MAX_INPUT_TEXT_LENGTH, 0):]
-        print(input_text)
         input_ids = self.tokenizer.encode(input_text, add_special_tokens=False, return_tensors="pt").to(self.device)
         input_ids_length = len(input_ids[0])
         input_ids = input_ids[max(input_ids_length - self.config.MAX_INPUT_TOKENS_LENGTH, 0):]
 
+        print(input_ids)
+        
         #TODO: verify if bad_words_ids works to avoid '\n'
         sample_outputs = self.model.generate(
             input_ids=input_ids,
@@ -30,6 +31,8 @@ class PythonPredictor:
             num_return_sequences=self.config.NUM_RETURN_SEQUENCES,
             do_sample=True,
         )
+
+        print(sample_outputs)
 
         predictions_list = []
         for sample_output in sample_outputs:
