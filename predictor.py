@@ -1,6 +1,6 @@
 import torch
 from config import Config
-from transformers import GPT2TokenizerFast, GPT2LMHeadModel
+from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from suggestions import create_suggestions
 import json
 
@@ -9,7 +9,7 @@ class PythonPredictor:
     def __init__(self, config):
         model_name_or_path = config.get("model_name_or_path", "distilgpt2")
         self.device = self.__get_device()
-        self.tokenizer = GPT2TokenizerFast.from_pretrained(model_name_or_path)
+        self.tokenizer = GPT2Tokenizer.from_pretrained(model_name_or_path)
         self.model = GPT2LMHeadModel.from_pretrained(model_name_or_path).to(self.device)
         self.config = Config(config, self.model.config.max_position_embeddings)
 
@@ -21,6 +21,8 @@ class PythonPredictor:
         input_ids_length = len(input_ids[0])
         input_ids = input_ids[max(input_ids_length - self.config.MAX_INPUT_TOKENS_LENGTH, 0):]
 
+        print(input_ids)
+
         sample_outputs = self.model.generate(
             input_ids=input_ids,
             top_p=self.config.TOP_P,
@@ -31,8 +33,11 @@ class PythonPredictor:
             do_sample=True,
         )
 
+        print(sample_outputs)
+
         predictions_list = []
         for sample_output in sample_outputs:
+            print(sample_output)
             predicted_sequence = sample_output[input_ids_length:].tolist()
             predictions_list.append(self.tokenizer.decode(predicted_sequence))
 
