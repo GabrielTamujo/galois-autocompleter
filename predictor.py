@@ -8,7 +8,7 @@ class PythonPredictor:
     def __init__(self, config):
         model_name_or_path = config.get("model_name_or_path", "distilgpt2")
         self.device = self.__get_device()
-        self.tokenizer = GPT2TokenizerFast.from_pretrained(model_name_or_path)
+        self.tokenizer = GPT2TokenizerFast.from_pretrained(model_name_or_path, add_prefix_space=True)
         self.model = GPT2LMHeadModel.from_pretrained(model_name_or_path).to(self.device)
         self.config = Config(config, self.model.config.max_position_embeddings)
 
