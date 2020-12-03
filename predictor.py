@@ -33,13 +33,15 @@ class PythonPredictor:
             do_sample=True,
         )
 
-        print(sample_outputs)
-
         predictions_list = []
         for sample_output in sample_outputs:
-            print(sample_output)
             predicted_sequence = sample_output[input_ids_length:].tolist()
             predictions_list.append(self.tokenizer.decode(predicted_sequence))
+            
+            for token in sample_output:
+                print('\n-----')
+                print(token)
+                print(self.tokenizer.decode(token))
 
         return json.dumps(create_suggestions(predictions_list))
 
