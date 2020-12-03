@@ -7,10 +7,10 @@
     config:
       top_k: 50
       top_p: 0.95
-      temperature: 0.9
+      temperature: 0.2
       num_return_sequences: 2
       num_tokens_to_predict: 16
       max_input_text_length: 1000
-      # model_name_or_path: ./java
+      model_name_or_path: ./java
   compute:
     gpu: 1

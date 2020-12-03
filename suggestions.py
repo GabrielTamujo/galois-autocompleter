@@ -9,7 +9,7 @@ def create_suggestions(model_predictions):
     predictions_list = []
 
     for prediction in model_predictions:
-        #prediction = prediction.split('\n')[0]
+        prediction = prediction.split('\n')[0]
         if is_valid_prediction(prediction) and prediction not in predictions_list:
             suggestions.append(new_long_suggestion(prediction))
             predictions_list.append(prediction)
