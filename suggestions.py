@@ -17,7 +17,7 @@ def create_suggestions(model_predictions):
                 suggestions.append(new_short_suggestion(first_fragment))
                 predictions_list.append(first_fragment)
     return {
-        "suggestions": suggestions
+        "result": suggestions
     }
 
 def is_valid_prediction(prediction):    
