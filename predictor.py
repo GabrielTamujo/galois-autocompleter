@@ -41,7 +41,7 @@ class PythonPredictor:
             predicted_sequence = sample_output[input_ids_length:].tolist()
             predictions_list.append(self.tokenizer.decode(predicted_sequence, skip_special_tokens=True, clean_up_tokenization_spaces=True))
 
-        return create_suggestions(predictions_list)
+        return json.dumps(create_suggestions(predictions_list))
 
     def __get_device(self):
         #TODO: get the available device with less memory allocated
