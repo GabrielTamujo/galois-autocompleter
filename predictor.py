@@ -15,8 +15,11 @@ class PythonPredictor:
     def predict(self, payload):
         input_text = payload["text"]
         input_text = input_text[max(len(input_text) - self.config.MAX_INPUT_TEXT_LENGTH, 0):]
-        input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
+        print(input_text)
+        input_ids = self.tokenizer.encode(input_text, add_special_tokens=False, return_tensors="pt").to(self.device)
+        print(input_ids)
         input_ids = input_ids[max(len(input_ids) - self.config.MAX_INPUT_TOKENS_LENGTH, 0):]
+        print(input_ids)
         input_ids_length = len(input_ids)
 
         #TODO: verify if bad_words_ids works to avoid '\n'
@@ -30,10 +33,14 @@ class PythonPredictor:
             do_sample=True,
         )
 
+        print(sample_outputs)
+
         predictions_list = []
         for sample_output in sample_outputs:
-            predictions_list.append(self.tokenizer.decode(sample_output[input_ids_length:].tolist(), skip_special_tokens=True))
+            predictions_list.append(self.tokenizer.decode(sample_output[input_ids_length:].tolist(), skip_special_tokens=True, clean_up_tokenization_spaces=True))
         
+        print(predictions_list)
+
         return create_suggestions(predictions_list)
 
     def __get_device(self):
