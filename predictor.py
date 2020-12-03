@@ -21,8 +21,6 @@ class PythonPredictor:
         input_ids_length = len(input_ids[0])
         input_ids = input_ids[max(input_ids_length - self.config.MAX_INPUT_TOKENS_LENGTH, 0):]
 
-        print(input_ids)
-
         #TODO: verify if bad_words_ids works to avoid '\n'
         sample_outputs = self.model.generate(
             input_ids=input_ids,
@@ -33,8 +31,6 @@ class PythonPredictor:
             num_return_sequences=self.config.NUM_RETURN_SEQUENCES,
             do_sample=True,
         )
-
-        print(sample_outputs)
 
         predictions_list = []
         for sample_output in sample_outputs:
