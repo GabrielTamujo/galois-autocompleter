@@ -1,7 +1,7 @@
 import torch
 from config import Config
 from transformers import GPT2TokenizerFast, GPT2LMHeadModel
-from suggestions.suggestions import Suggestions
+from suggestions import create_suggestions
 
 class PythonPredictor:
 
@@ -19,6 +19,7 @@ class PythonPredictor:
         input_ids = input_ids[max(len(input_ids) - self.config.MAX_INPUT_TOKENS_LENGTH, 0):]
         input_ids_length = len(input_ids)
 
+        #TODO: verify if bad_words_ids works to avoid '\n'
         sample_outputs = self.model.generate(
             input_ids=input_ids,
             top_p=self.config.TOP_P,
@@ -32,10 +33,11 @@ class PythonPredictor:
         predictions_list = []
         for sample_output in sample_outputs:
             predictions_list.append(self.tokenizer.decode(sample_output[input_ids_length:].tolist(), skip_special_tokens=True))
-
-        return Suggestions(predictions_list)
+        
+        return create_suggestions(predictions_list)
 
     def __get_device(self):
+        #TODO: get the available device with less memory allocated
         device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"using device: {device}")
         return device
