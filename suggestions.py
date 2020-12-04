@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 
-#TODO: this code works, but is terrible
+#TODO: this code works, but is terrible, I know you can do better
 def create_suggestions(model_predictions):
     print(model_predictions)
     
@@ -9,7 +9,6 @@ def create_suggestions(model_predictions):
     predictions_list = []
 
     for prediction in model_predictions:
-        prediction = prediction.split('\n')[0]
         if is_valid_prediction(prediction) and prediction not in predictions_list:
             suggestions.append(new_long_suggestion(prediction))
             predictions_list.append(prediction)
