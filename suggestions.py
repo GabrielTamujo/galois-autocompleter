@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 
-#TODO: this code works, but is terrible, I know you can do better
+#TODO: this code works, but is terrible
 def create_suggestions(model_predictions):
     print(model_predictions)
     
