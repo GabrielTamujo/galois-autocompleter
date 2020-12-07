@@ -7,3 +7,4 @@ class Config:
         self.TOP_K = config.get("top_k", 50)
         self.TOP_P = config.get("top_p", 1.0)
         self.TEMPERATURE = config.get("temperature", 1.0)
+        self.END_OF_LINE_TOKEN_ID = config.get("end_of_line_token_id", 50258)

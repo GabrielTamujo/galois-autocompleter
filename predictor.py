@@ -1,7 +1,7 @@
 import torch
 from config import Config
 from transformers import GPT2TokenizerFast, GPT2LMHeadModel
-from suggestions import create_suggestions
+from suggestions import Suggestions
 import subprocess
 import json
 
@@ -32,16 +32,14 @@ class PythonPredictor:
             do_sample=True,
         )
 
-        predictions_list = []
+        model_predictions = []
         for sample_output in sample_outputs:
-            # Remove the inputs from the sequence
             predicted_sequence = sample_output[input_ids_length:].tolist()
-            # Remove everything after the end of line token
-            END_OF_LINE_TOKEN_ID = 50258
+            END_OF_LINE_TOKEN_ID = self.config.END_OF_LINE_TOKEN_ID
             predicted_sequence = predicted_sequence[: predicted_sequence.index(END_OF_LINE_TOKEN_ID) if END_OF_LINE_TOKEN_ID in predicted_sequence else None]
-            predictions_list.append(self.tokenizer.decode(predicted_sequence, skip_special_tokens=True))
+            model_predictions.append(self.tokenizer.decode(predicted_sequence, skip_special_tokens=True))
 
-        return json.dumps(create_suggestions(predictions_list))
+        return json.dumps(Suggestions(model_predictions).get_suggestions())
 
     def __get_device(self):        
         device = self.__get_gpu() if torch.cuda.is_available() else "cpu"
