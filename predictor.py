@@ -16,7 +16,7 @@ class PythonPredictor:
 
     def predict(self, payload):
         print(self.device)
-        request = json.loads(payload)
+        #request = json.loads(payload)
         input_text = request["text"]
         input_text = input_text[max(len(input_text) - self.config.MAX_INPUT_TEXT_LENGTH, 0):]
         input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
