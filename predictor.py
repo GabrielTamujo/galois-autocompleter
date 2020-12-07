@@ -55,7 +55,7 @@ class PythonPredictor:
                     '--format=csv,nounits,noheader'
                 ], encoding='utf-8')
             gpu_memory_info = [int(x) for x in result.strip().split('\n')]
-            less_busy_gpu_index = gpu_memory.index(min(gpu_memory))
+            less_busy_gpu_index = gpu_memory_info.index(min(gpu_memory_info))
             return f"cuda:{less_busy_gpu_index}"
         return "cuda"
 
