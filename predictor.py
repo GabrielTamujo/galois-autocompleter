@@ -34,7 +34,9 @@ class PythonPredictor:
 
         predictions_list = []
         for sample_output in sample_outputs:
+            END_OF_LINE_TOKEN_ID = 50258
             predicted_sequence = sample_output[input_ids_length:].tolist()
+            predicted_sequence = sample_output[: sample_output.index(END_OF_LINE_TOKEN_ID) if END_OF_LINE_TOKEN_ID in sample_output else None]]
             predictions_list.append(self.tokenizer.decode(predicted_sequence, skip_special_tokens=True))
 
         return json.dumps(create_suggestions(predictions_list))
