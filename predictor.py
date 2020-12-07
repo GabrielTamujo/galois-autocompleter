@@ -34,8 +34,10 @@ class PythonPredictor:
 
         predictions_list = []
         for sample_output in sample_outputs:
-            END_OF_LINE_TOKEN_ID = 50258
+            # Remove the inputs from the sequence
             predicted_sequence = sample_output[input_ids_length:].tolist()
+            # Remove everything after the end of line token
+            END_OF_LINE_TOKEN_ID = 50258
             predicted_sequence = predicted_sequence[: predicted_sequence.index(END_OF_LINE_TOKEN_ID) if END_OF_LINE_TOKEN_ID in predicted_sequence else None]
             predictions_list.append(self.tokenizer.decode(predicted_sequence, skip_special_tokens=True))
 
