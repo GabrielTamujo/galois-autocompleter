@@ -2,7 +2,6 @@ import torch
 from config import Config
 from transformers import GPT2TokenizerFast, GPT2LMHeadModel
 from suggestions import create_suggestions
-from control_database import ControlDatabase
 import subprocess
 import json
 
