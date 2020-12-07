@@ -15,6 +15,7 @@ class PythonPredictor:
         self.config = Config(config, self.model.config.max_position_embeddings)
 
     def predict(self, payload):
+        print(self.device)
         request = json.loads(payload)
         input_text = request["text"]
         input_text = input_text[max(len(input_text) - self.config.MAX_INPUT_TEXT_LENGTH, 0):]
