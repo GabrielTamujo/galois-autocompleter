@@ -16,7 +16,7 @@ class PythonPredictor:
 
     def predict(self, payload):
         print(f"using device: {device}")
-        if not isinstance(payload, dict)
+        if not isinstance(payload, dict):
             payload = json.loads(payload)
         input_text = payload["text"]
         input_text = input_text[max(len(input_text) - self.config.MAX_INPUT_TEXT_LENGTH, 0):]
