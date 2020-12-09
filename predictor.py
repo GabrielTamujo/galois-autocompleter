@@ -14,11 +14,11 @@ class PythonPredictor:
         self.model = GPT2LMHeadModel.from_pretrained(model_name_or_path).to(self.device)
         self.config = Config(config, self.model.config.max_position_embeddings)
 
-    # TODO: check payload encoding
     def predict(self, payload):
-        print(self.device)
-        request = json.loads(payload)
-        input_text = request["text"]
+        print(f"using device: {device}")
+        if not isinstance(payload, dict)
+            payload = json.loads(payload)
+        input_text = payload["text"]
         input_text = input_text[max(len(input_text) - self.config.MAX_INPUT_TEXT_LENGTH, 0):]
         input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
         input_ids_length = len(input_ids[0])
