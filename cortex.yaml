@@ -14,4 +14,3 @@
       model_name_or_path: ./distilGPT2
   compute:
     gpu: 1
-    mem: 2000Mi
