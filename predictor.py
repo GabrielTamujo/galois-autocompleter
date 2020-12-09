@@ -41,7 +41,7 @@ class PythonPredictor:
             predicted_sequence = predicted_sequence[: predicted_sequence.index(END_OF_LINE_TOKEN_ID) if END_OF_LINE_TOKEN_ID in predicted_sequence else None]
             model_predictions.append(self.tokenizer.decode(predicted_sequence, skip_special_tokens=True))
 
-        return json.dumps(Suggestions(model_predictions).get_suggestions())
+        return json.dumps(Suggestions(model_predictions).get_result())
 
     def __get_device(self):        
         device = self.__get_gpu() if torch.cuda.is_available() else "cpu"

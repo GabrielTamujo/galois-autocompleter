@@ -8,10 +8,12 @@ class Suggestions():
         self.predictions_list = []
         self.__create_suggestions(model_predictions)
 
-    def get_suggestions(self):
-        return {
+    def get_result(self):
+        result = {
             "result": self.suggestions
         }
+        print(result)
+        return result
     
     def __create_suggestions(self, model_predictions):
         for prediction in model_predictions:
