@@ -15,7 +15,7 @@ class PythonPredictor:
         self.config = Config(config, self.model.config.max_position_embeddings)
 
     def predict(self, payload):
-        print(f"using device: {device}")
+        print(f"using device: {self.device}")
         if not isinstance(payload, dict):
             payload = json.loads(payload)
         input_text = payload["text"]
