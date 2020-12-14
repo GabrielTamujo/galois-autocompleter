@@ -19,6 +19,7 @@ class PythonPredictor:
         if not isinstance(payload, dict):
             payload = json.loads(payload)
         input_text = payload["text"]
+        input_text = input_text.replace('\n', '<|endofline|>')
         input_text = input_text[max(len(input_text) - self.config.MAX_INPUT_TEXT_LENGTH, 0):]
         input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
         input_ids_length = len(input_ids[0])
