@@ -25,12 +25,22 @@ class PythonPredictor:
         input_ids_length = len(input_ids[0])
         input_ids = input_ids[max(input_ids_length - self.config.MAX_INPUT_TOKENS_LENGTH, 0):]
 
+        # sample_outputs = self.model.generate(
+        #     input_ids=input_ids,
+        #     top_p=self.config.TOP_P,
+        #     top_k=self.config.TOP_K,
+        #     temperature=self.config.TEMPERATURE, 
+        #     max_length=input_ids_length + self.config.NUM_TOKENS_TO_PREDICT, 
+        #     num_return_sequences=self.config.NUM_RETURN_SEQUENCES,
+        #     do_sample=True,
+        # )
+
         sample_outputs = self.model.generate(
             input_ids=input_ids,
-            top_p=self.config.TOP_P,
-            top_k=self.config.TOP_K,
-            temperature=self.config.TEMPERATURE, 
-            max_length=input_ids_length + self.config.NUM_TOKENS_TO_PREDICT, 
+            top_p=payload["topP"],
+            top_k=payload["topK"],
+            temperature=payload["temperature"], 
+            max_length=input_ids_length + payload["numTokens"], 
             num_return_sequences=self.config.NUM_RETURN_SEQUENCES,
             do_sample=True,
         )
