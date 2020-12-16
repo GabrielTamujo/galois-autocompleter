@@ -5,9 +5,9 @@
     path: predictor.py
     processes_per_replica: 4
     config:
-      top_k: 10
+      top_k: 50
       top_p: 0.85
-      temperature: 0.9
+      temperature: 0.5
       num_return_sequences: 2
       num_tokens_to_predict: 16
       max_input_text_length: 1000

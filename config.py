@@ -5,6 +5,6 @@ class Config:
         self.MAX_INPUT_TEXT_LENGTH = config.get("max_input_text_length", 1000)
         self.NUM_RETURN_SEQUENCES = config.get("num_return_sequences", 2)
         self.TOP_K = config.get("top_k", 50)
-        self.TOP_P = config.get("top_p", 1.0)
-        self.TEMPERATURE = config.get("temperature", 1.0)
+        self.TOP_P = config.get("top_p", 0.85)
+        self.TEMPERATURE = config.get("temperature", 0.5)
         self.END_OF_LINE_TOKEN_ID = config.get("end_of_line_token_id", 50258)
