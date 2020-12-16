@@ -24,7 +24,6 @@ class PythonPredictor:
         input_ids = self.tokenizer.encode(input_text, return_tensors="pt").to(self.device)
         input_ids_length = len(input_ids[0])
         input_ids = input_ids[max(input_ids_length - self.config.MAX_INPUT_TOKENS_LENGTH, 0):]
-        print(self.tokenizer(input_ids))
 
         sample_outputs = self.model.generate(
             input_ids=input_ids,
@@ -35,7 +34,7 @@ class PythonPredictor:
             num_return_sequences=self.config.NUM_RETURN_SEQUENCES,
             do_sample=True,
         )
-        
+
         model_predictions = []
         for sample_output in sample_outputs:
             predicted_sequence = sample_output[input_ids_length:].tolist()
