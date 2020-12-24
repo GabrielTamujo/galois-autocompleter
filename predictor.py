@@ -40,7 +40,7 @@ class PythonPredictor:
             predicted_sequence = sample_output[input_ids_length:].tolist()
             END_OF_LINE_TOKEN_ID = self.config.END_OF_LINE_TOKEN_ID
             predicted_sequence = predicted_sequence[: predicted_sequence.index(END_OF_LINE_TOKEN_ID) if END_OF_LINE_TOKEN_ID in predicted_sequence else None]
-            model_predictions.append(self.tokenizer.decode(predicted_sequence, skip_special_tokens=True))
+            model_predictions.append(self.tokenizer.decode(predicted_sequence, skip_special_tokens=True, clean_up_tokenization_spaces=True))
 
         return json.dumps(Suggestions(model_predictions).get_result())
 

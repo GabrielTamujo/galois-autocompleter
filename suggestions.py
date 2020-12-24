@@ -17,6 +17,7 @@ class Suggestions():
     
     def __create_suggestions(self, model_predictions):
         for prediction in model_predictions:
+            prediction = self.__escape_spaces_from_beggining(prediction)
             self.__append_if_valid_suggestion(self.__new_long_suggestion(prediction))
             self.__append_if_valid_suggestion(self.__new_short_suggestion(prediction))
 
@@ -70,3 +71,9 @@ class Suggestions():
             '!']
         regexPattern = '|'.join(map(re.escape, delimiters))
         return re.split(regexPattern, prediction)[0]
+
+    def __escape_spaces_from_beggining(self, prediction):
+        matrix = prediction.split(' ')
+        while matrix !=[] and not matrix[0]:
+            del matrix[0]
+        return ' '.join(matrix)
